@@ -70,15 +70,15 @@ a {
   border: 2px solid $third;
   width: 90% !important;
   font-size: 25px;
-  font-family: 600;
   border-radius: 18px;
   transition: 0.3s;
+
 }
 
 .btn-primary:hover, .btn-primary:focus {
   background-color: $secondary !important;
-  color: $primary !important;
-  border: 2px solid $primary !important;
+  color: $third !important;
+  border: 2px solid $third !important;
 }
 
 :where(.css-dev-only-do-not-override-1k979oh).ant-input-affix-wrapper >input.ant-input{

@@ -1,5 +1,6 @@
 import React from 'react';
-import landing from '../imgs/landing.png'
+import landing from '../lottie/security.json'
+import Lottie from 'lottie-react';
 const Home = () => {
   return (
     <div className="container ">
@@ -11,7 +12,7 @@ const Home = () => {
           </div>
         </div>
         <div className="col-lg-6 overflow-hidden">
-          <img src={landing} className='img-landing' alt="" />
+          <Lottie animationData={landing} className='img-landing'/>
         </div>
       </div>
     </div>

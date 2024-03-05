@@ -75,7 +75,7 @@ const MonoalphabeticCipher = () => {
   return (
     <>
       <div className='container d-flex justify-content-center'>
-        <h1>MonoalphabeticCipher</h1>
+        <h1>Monoalphabetic Cipher</h1>
       </div>
       <Tabs
         defaultActiveKey="1"

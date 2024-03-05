@@ -62,7 +62,7 @@ const VigenereCipher = () => {
   return (
     <>
       <div className='container d-flex justify-content-center'>
-        <h1>Vigenere Cipher</h1>
+        <h1>vigenere Cipher</h1>
       </div>
       <Tabs
         defaultActiveKey="1"

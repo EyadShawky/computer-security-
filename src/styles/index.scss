@@ -7,7 +7,6 @@ body {
   margin: 0;
   font-family: "Madimi One", sans-serif;
   font-optical-sizing: auto;
-  overflow: hidden !important;
 }
 
 a {
@@ -96,11 +95,11 @@ a {
 }
 
 .img-landing{
-  background-image: url(../imgs/landing.png);
   background-position: center center ;
   background-repeat: no-repeat;
   background-size: cover;
-  height: 75vh;
+  height: 80vh;
+  overflow: hidden;
 }
 
 .text-header{
@@ -132,3 +131,4 @@ a {
   color: $secondary !important;
   border: 2px solid $secondary !important;
 }
+

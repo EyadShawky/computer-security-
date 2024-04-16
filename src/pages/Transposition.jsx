@@ -1,49 +1,97 @@
+import React, { useState } from 'react';
 import { EyeInvisibleOutlined, EyeOutlined, FunctionOutlined, RocketOutlined, RollbackOutlined } from '@ant-design/icons';
 import { Input, Tabs } from 'antd';
-import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
+
 const Transposition = () => {
-  function rot13(form, shift) {
-    var newstr = "";
-    for (var i = 0; i < form.length; i++) {
-      var charCode = form.charCodeAt(i);
-      if ((charCode >= 65 && charCode <= 90) || (charCode >= 97 && charCode <= 122)) {
-        var shiftAmount = charCode <= 90 ? 65 : 97;
-        newstr += String.fromCharCode((charCode - shiftAmount - shift + 26) % 26 + shiftAmount);
-      } else {
-        newstr += form[i];
-      }
+  const [text, setText] = useState('');
+  const [key, setKey] = useState('');
+  const [cipheredText, setCipheredText] = useState('');
+  const [decipheredText, setDecipheredText] = useState('');
+
+  const hasDuplicates = (text = '') => {
+    for (const char of text)
+      if (text.indexOf(char) !== text.lastIndexOf(char))
+        return true;
+    return false;
+  }
+
+  const compareFunction = (char1 = '', char2) => {
+    if (char1.charCodeAt(0) < char2.charCodeAt(0)) return -1;
+    if (char1.charCodeAt(0) > char2.charCodeAt(0)) return 1;
+    return 0;
+  }
+
+  const fillMatrixFromPlainText = (plainText, key) => {
+    const mat = [];
+    let filling = ' ';
+    const rows = Math.ceil((plainText.length / key.length));
+    for (let i = 0; i < rows; i++)
+      mat[i] = plainText.substr(i * key.length, key.length).split('');
+
+    const missingChars = key.length - mat[rows - 1].length;
+    if (missingChars > 0)
+      mat[rows - 1].push(...filling.repeat(missingChars).split(''));
+
+    return mat;
+  }
+
+  const fillMatrixFromCipheredText = (ciphered, key = '') => {
+    const matrix = [];
+    const rows = Math.ceil((ciphered.length / key.length));
+    const keyAsc = key.split('').sort(compareFunction);
+
+    for (let i = 0; i < rows; i++)
+      matrix[i] = [];
+
+    for (let k = 0; k < ciphered.length; k++) {
+      const i = (k + rows) % rows;
+      const j = Math.floor((k + rows) / rows) - 1;
+      const col = key.indexOf(keyAsc[j]);
+      matrix[i][col] = ciphered.charAt(k);
     }
-    return newstr;
+    return matrix;
   }
 
-  const [inputText, setInputText] = useState('');
-  const [shift, setShift] = useState(3);
-  const [encodedResult, setEncodedResult] = useState('');
-  const [decodedResult, setDecodedResult] = useState('');
-
-  const handleEncode = () => {
-    const upCase = inputText.toUpperCase();
-    const encrypted = rot13(upCase, -shift);
-    setEncodedResult(encrypted);
-    setDecodedResult('');
+  const cipher = (mat, key) => {
+    const keyAsc = key.split('').sort(compareFunction);
+    let textCiphered = '';
+    for (const char of keyAsc) {
+      const index = key.indexOf(char);
+      for (let j = 0; j < mat.length; j++)
+        textCiphered += mat[j][index];
+    }
+    return textCiphered;
   }
 
-  const handleDecode = () => {
-    const upCase = inputText.toUpperCase();
-    const decrypted = rot13(upCase, shift);
-    setDecodedResult(decrypted);
-    setEncodedResult('');
+  const decipher = (matrix) => {
+    let text = '';
+    for (let i = 0; i < matrix.length; i++) {
+      text += matrix[i].join('');
+    }
+    return text;
   }
 
-  const handleInputChange = (e) => {
-    setInputText(e.target.value);
+  const handleEncrypt = () => {
+    if (!text || !key) return;
+    if (hasDuplicates(key)) {
+      alert('The key has repeated characters');
+      return;
+    }
+    const mat = fillMatrixFromPlainText(text, key);
+    setCipheredText(cipher(mat, key));
   }
 
-  const handleShiftChange = (e) => {
-    const value = parseInt(e.target.value, 10);
-    setShift(isNaN(value) ? 1 : Math.max(1, Math.min(25, value)));
+  const handleDecrypt = () => {
+    if (!cipheredText || !key) return;
+    if (hasDuplicates(key)) {
+      alert('The key has repeated characters');
+      return;
+    }
+    const matrix = fillMatrixFromCipheredText(cipheredText, key);
+    const decipheredText = decipher(matrix);
+    setDecipheredText(decipheredText);
   }
 
   return (
@@ -66,28 +114,25 @@ const Transposition = () => {
                     prefix={<EyeOutlined />}
                     className="site-form-item-icon input-card "
                     placeholder="Enter text to encode"
-                    value={inputText}
-                    onChange={handleInputChange}
+                    id="text"
+                    value={text} onChange={(e) => setText(e.target.value)}
                   />
                   <Input
                     prefix={<FunctionOutlined />}
                     type="number"
-                    min="1"
-                    max="25"
                     className="site-form-item-icon input-card mt-4"
-                    placeholder="Enter shift value"
-                    value={shift}
-                    onChange={handleShiftChange}
+                    placeholder="Enter key"
+                    id="key"
+                    value={key} onChange={(e) => setKey(e.target.value)}
                   />
                   <Input
                     prefix={<EyeInvisibleOutlined />}
                     className="site-form-item-icon input-card mt-4"
                     placeholder="Encrypted result"
                     readOnly
-                    value={encodedResult}
+                    id="ciphered" value={cipheredText}
                   />
-                  <button className="btn btn-primary mt-4" onClick={handleEncode}><RocketOutlined /> Encrypt <RocketOutlined /> </button>
-
+                  <button className="btn btn-primary mt-4" onClick={handleEncrypt}><RocketOutlined /> Encrypt <RocketOutlined /> </button>
                 </div>
               </div>
             ),
@@ -99,31 +144,29 @@ const Transposition = () => {
               <div className='container card-page'>
                 <div className='card container'>
                   <Input
-                    prefix={<EyeInvisibleOutlined />}
-                    className="site-form-item-icon input-card"
+                    prefix={<EyeOutlined />}
+                    className="site-form-item-icon input-card "
                     placeholder="Enter text to decode"
-                    value={inputText}
-                    onChange={handleInputChange}
+                    type="text"
+                    id="text"
+                    value={cipheredText}
+                    onChange={(e) => setText(e.target.value)}
                   />
                   <Input
                     prefix={<FunctionOutlined />}
                     type="number"
-                    min="1"
-                    max="25"
                     className="site-form-item-icon input-card mt-4"
-                    placeholder="Enter shift value"
-                    value={shift}
-                    onChange={handleShiftChange}
+                    placeholder="Enter key"
+                    id="key"
+                    value={key} onChange={(e) => setKey(e.target.value)}
                   />
                   <Input
-                    prefix={<EyeOutlined />}
+                    prefix={<EyeInvisibleOutlined />}
                     className="site-form-item-icon input-card mt-4"
                     placeholder="Decrypted result"
-                    readOnly
-                    value={decodedResult}
+                    id="deciphered" value={text}
                   />
-                                    <button className="btn btn-primary mt-4" onClick={handleDecode}><RocketOutlined /> Decrypt <RocketOutlined /> </button>
-
+                  <button className="btn btn-primary mt-4" onClick={handleDecrypt}><RocketOutlined /> Decrypt <RocketOutlined /> </button>
                 </div>
               </div>
             ),
@@ -135,7 +178,9 @@ const Transposition = () => {
         <Link to="/"><button className='btn btn-primary-back'><RollbackOutlined />  Back To Home </button></Link>
       </div>
     </>
-  )
+  );
 }
 
+
 export default Transposition;
+

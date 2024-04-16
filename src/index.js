@@ -8,8 +8,10 @@ import Home from './pages/home';
 import LayoutMain from './components/Layout';
 import CaesarCipher from './pages/CaesarCipher';
 import MonoalphabeticCipher from './pages/MonoalphabeticCipher';
-import VernmCipher from './pages/VernmCipher';
 import VigenereCipher from './pages/VigenereCipher';
+import PlayFair from './pages/PlayFair';
+import Transposition from './pages/Transposition';
+import RailFance from './pages/RailFance';
 
 
 const route = createBrowserRouter([
@@ -18,7 +20,9 @@ const route = createBrowserRouter([
     {path:"caesar-cipher" , element:<CaesarCipher />},
     {path:"monoalphabetic-cipher" , element:<MonoalphabeticCipher />},
     {path:"vigenere-cipher" , element:<VigenereCipher />},
-    {path:"Vernm-cipher" , element:<VernmCipher  />},
+    {path:"play-fair" , element:<PlayFair/>},
+    {path:"transposition" , element:<Transposition/>},
+    {path:"railfance" , element:<RailFance/>},
     {path:"/*" , element:<ErrorPage/>},
   ] },
 ])

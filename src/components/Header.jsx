@@ -21,8 +21,15 @@ const Header = () => {
             <li className="nav-item">
               <Link to='/vigenere-cipher' className="nav-link color__nav">Vigenère Cipher</Link>
             </li>
+            
             <li className="nav-item">
-              <Link to='/Vernm-cipher' className="nav-link color__nav">Vernm Cipher</Link>
+              <Link to='/play-fair' className="nav-link color__nav">Play Fair</Link>
+            </li>
+            <li className="nav-item">
+              <Link to='/transposition' className="nav-link color__nav">Transposition</Link>
+            </li>
+            <li className="nav-item">
+              <Link to='/railfance' className="nav-link color__nav">RailFance</Link>
             </li>
           </ul>
         </div>

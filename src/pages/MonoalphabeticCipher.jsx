@@ -3,73 +3,56 @@ import { EyeInvisibleOutlined, EyeOutlined, FunctionOutlined, RocketOutlined, Ro
 import { Input, Tabs } from 'antd';
 import { Link } from 'react-router-dom';
 
+const alphabetArr = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
+
 const MonoalphabeticCipher = () => {
   const [inputText, setInputText] = useState('');
-  const [encodedResult, setEncodedResult] = useState('');
-  const [decodedResult, setDecodedResult] = useState('');
-  const [key, setKey] = useState('');
-  const [shuffledArr, setShuffledArr] = useState([]);
-  const alphabetArr = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
+  const [outputText, setOutputText] = useState('');
+  const [decryptedText, setDecryptedText] = useState('');
+  const [userKey, setUserKey] = useState('');
 
-  const shuffle = (array) => {
-    let shuffledArray = array.slice(0, array.length);
-    let currentIndex = shuffledArray.length;
-    let temporaryValue, randomIndex;
-
-    while (0 !== currentIndex) {
-      randomIndex = Math.floor(Math.random() * currentIndex);
-      currentIndex -= 1;
-
-      temporaryValue = shuffledArray[currentIndex];
-      shuffledArray[currentIndex] = shuffledArray[randomIndex];
-      shuffledArray[randomIndex] = temporaryValue;
+  const handleCipher = (isEncrypt) => {
+    if (isEncrypt) {
+      cipher();
+    } else {
+      decipher();
     }
-
-    return shuffledArray;
   };
 
   const cipher = () => {
-    if (key.length !== 26) {
-      alert("Key must be 26 characters in length");
-      return;
+    const key = userKey.toUpperCase();
+    let result = '';
+
+    for (let i = 0; i < inputText.length; i++) {
+      const char = inputText[i].toUpperCase();
+      const index = alphabetArr.indexOf(char);
+
+      if (index !== -1) {
+        result += key[index % key.length];
+      } else {
+        result += char;
+      }
     }
 
-    const shuffled = shuffle(key.split(''));
-    setShuffledArr(shuffled);
-    console.log("Key : " + shuffled.join('').replace(/,/g, ''));
-
-    const textArr = inputText.split('');
-
-    const cipheredText = textArr.map((char) => {
-      if ((char === ' ') || (char === '\t') || (char === '\n') || (alphabetArr.indexOf(char.toUpperCase()) === -1)) {
-        return char;
-      } else {
-        return shuffled[alphabetArr.indexOf(char.toUpperCase())];
-      }
-    }).join('').replace(/,/g, '');
-
-    console.log(cipheredText);
-    setEncodedResult(cipheredText);
+    setOutputText(result);
   };
 
   const decipher = () => {
-    if (key.length !== 26) {
-      alert("Key must be 26 characters in length");
-      return;
+    const key = userKey.toUpperCase();
+    let result = '';
+
+    for (let i = 0; i < outputText.length; i++) {
+      const char = outputText[i].toUpperCase();
+      const index = key.indexOf(char);
+
+      if (index !== -1) {
+        result += alphabetArr[index];
+      } else {
+        result += char;
+      }
     }
 
-    const textArr = inputText.split('');
-
-    const decipheredText = textArr.map((char) => {
-      if ((char === ' ') || (char === '\t') || (char === '\n') || (alphabetArr.indexOf(char.toUpperCase()) === -1)) {
-        return char;
-      } else {
-        return alphabetArr[shuffledArr.indexOf(char.toUpperCase())];
-      }
-    }).join('').replace(/,/g, '');
-
-    console.log(decipheredText);
-    setDecodedResult(decipheredText);
+    setDecryptedText(result);
   };
 
   return (
@@ -92,24 +75,23 @@ const MonoalphabeticCipher = () => {
                     prefix={<EyeOutlined />}
                     className="site-form-item-icon input-card "
                     placeholder="Enter text to encode"
-                    value={inputText}
-                    onChange={(e) => setInputText(e.target.value)}
+                    value={inputText} onChange={e => setInputText(e.target.value)}
                   />
                   <Input
                     prefix={<FunctionOutlined />}
+                    type="text"
                     className="site-form-item-icon input-card mt-4"
-                    placeholder="Enter key"
-                    value={key}
-                    onChange={(e) => setKey(e.target.value)}
+                    placeholder="Enter custom key"
+                    value={userKey} onChange={e => setUserKey(e.target.value)}
                   />
                   <Input
                     prefix={<EyeInvisibleOutlined />}
                     className="site-form-item-icon input-card mt-4"
-                    placeholder="Encoded result"
+                    placeholder="Encrypted result"
                     readOnly
-                    value={encodedResult}
+                    value={outputText}
                   />
-                  <button className="btn btn-primary mt-4" onClick={cipher}><RocketOutlined /> Encode <RocketOutlined /> </button>
+                  <button className="btn btn-primary mt-4" onClick={() => handleCipher(true)}><RocketOutlined /> Encrypt <RocketOutlined /> </button>
                 </div>
               </div>
             ),
@@ -121,39 +103,40 @@ const MonoalphabeticCipher = () => {
               <div className='container card-page'>
                 <div className='card container'>
                   <Input
-                    prefix={<EyeInvisibleOutlined />}
+                    prefix={<EyeOutlined />}
                     className="site-form-item-icon input-card "
                     placeholder="Enter text to decode"
-                    value={inputText}
-                    onChange={(e) => setInputText(e.target.value)}
+                    value={outputText}
+                    onChange={e => setOutputText(e.target.value)}
                   />
                   <Input
                     prefix={<FunctionOutlined />}
+                    type="text"
                     className="site-form-item-icon input-card mt-4"
-                    placeholder="Enter key"
-                    value={key}
-                    onChange={(e) => setKey(e.target.value)}
+                    placeholder="Enter custom key"
+                    value={userKey}
+                    onChange={e => setUserKey(e.target.value)}
                   />
                   <Input
-                    prefix={<EyeOutlined />}
+                    prefix={<EyeInvisibleOutlined />}
                     className="site-form-item-icon input-card mt-4"
-                    placeholder="Decoded result"
+                    placeholder="Decrypted result"
                     readOnly
-                    value={decodedResult}
+                    value={decryptedText}
                   />
-                  <button className="btn btn-primary mt-4" onClick={decipher}><RocketOutlined /> Decode <RocketOutlined /> </button>
-
+                  <button className="btn btn-primary mt-4" onClick={() => handleCipher(false)}><RocketOutlined /> Decrypt <RocketOutlined /> </button>
                 </div>
               </div>
             ),
           },
         ]}
       />
-      <div className='container d-flex justify-content-center'>
-        <Link to="/"><button className='btn btn-primary-back'><RollbackOutlined />  back To Home </button></Link>
+
+      <div className='container d-flex justify-content-center' >
+        <Link to="/"><button className='btn btn-primary-back'><RollbackOutlined />  Back To Home </button></Link>
       </div>
     </>
   );
-};
+}
 
 export default MonoalphabeticCipher;
